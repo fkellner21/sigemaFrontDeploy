@@ -1,0 +1,47 @@
+<mat-tab-group>
+    <mat-tab label="Listado de equipos">
+        <maquina
+            [marcas]="marcas"
+            [modelos]="modelos"
+            [tiposEquipo]="tipos"
+            [isLoadingMaquinas]="isLoadingMaquinas"
+            [maquinas]="maquinas"
+            (actualizarMaquinasEventEmmiter)="loadMaquinas()"
+        ></maquina>
+    </mat-tab>
+
+    <mat-tab label="Modelos">
+        <modelo
+            [modelos]="modelos"
+            [tipos]="tipos"
+            [marcas]="marcas"
+            [isLoadingModelos]="isLoadingModelos"
+            (actualizarModelosEventEmmiter)="loadModelos()"
+        ></modelo>
+    </mat-tab>
+    <mat-tab label="Marcas">
+        <marca
+            [marcas]="marcas"
+            [isLoadingMarcas]="isLoadingMarcas"
+            (marcasActualizadas)="loadMarcas()"
+        ></marca>
+    </mat-tab>
+    <mat-tab label="Tipos de equipo">
+        <tipo-equipo
+            [isLoadingTipos]="isLoadingTipos"
+            [tiposDeEquipo]="tipos"
+            (actualizarTiposEventEmmiter)="loadTipos()"
+        ></tipo-equipo>
+    </mat-tab>
+</mat-tab-group>
+
+<style>
+    ::ng-deep .mat-mdc-tab-body.mat-mdc-tab-body-active {
+        z-index: 0 !important;
+        position: relative !important;
+    }
+
+    ::ng-deep .mat-mdc-tab-header{
+        z-index: 0 !important;
+    }
+</style>

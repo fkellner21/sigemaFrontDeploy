@@ -1,0 +1,227 @@
+<div class="modal" tabindex="-1" style="display: block">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    {{ modeloEquipo.id ? "Editar" : "Agregar" }} modelo de
+                    equipo
+                </h5>
+                <button
+                    (click)="onOpen()"
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+            </div>
+
+            <div class="modal-body">
+                <form (ngSubmit)="onSubmit(modeloForm)" #modeloForm="ngForm">
+                    <!-- Año -->
+                    <div>
+                        <p>Año</p>
+                        <input
+                            placeholder="Año"
+                            name="anio"
+                            [(ngModel)]="modeloEquipo.anio"
+                            class="form-control my-2"
+                            required
+                            type="number"
+                            #anio="ngModel"
+                        />
+                        @if (anio.invalid && (anio.dirty || anio.touched)) { @if
+                        (anio.errors!['required']) {
+                        <div class="alert alert-danger">Año requerido</div>
+                        } }
+                    </div>
+
+                    <!-- Modelo -->
+                    <div>
+                        <p>Modelo</p>
+                        <input
+                            placeholder="Modelo"
+                            name="modelo"
+                            [(ngModel)]="modeloEquipo.modelo"
+                            class="form-control my-2"
+                            required
+                            #modelo="ngModel"
+                        />
+                        @if (modelo.invalid && (modelo.dirty || modelo.touched))
+                        { @if (modelo.errors!['required']) {
+                        <div class="alert alert-danger">Modelo requerido</div>
+                        } }
+                    </div>
+
+                    <!-- Marca -->
+                    <p>Marca</p>
+                    <select
+                        class="form-control my-2"
+                        name="marca"
+                        [(ngModel)]="modeloEquipo.marca"
+                        required
+                    >
+                        <option [ngValue]="null" disabled>
+                            Seleccione una marca...
+                        </option>
+                        <option *ngFor="let m of marcas" [ngValue]="m">
+                            {{ m.nombre }}
+                        </option>
+                    </select>
+
+                    <!-- Tipo -->
+                    <p>Tipo</p>
+                    <select
+                        class="form-control my-2"
+                        name="tipoEquipo"
+                        [(ngModel)]="modeloEquipo.tipoEquipo"
+                        required
+                    >
+                        <option [ngValue]="null" disabled>
+                            Seleccione un tipo...
+                        </option>
+                        <option *ngFor="let t of tiposEquipo" [ngValue]="t">
+                            {{ t.codigo }}
+                        </option>
+                    </select>
+
+                    <!-- Unidad de medida -->
+                    <p>Unidad de medida de trabajo</p>
+                    <select
+                        class="form-control my-2"
+                        name="unidadMedida"
+                        [(ngModel)]="modeloEquipo.unidadMedida"
+                        (ngModelChange)="onUnidadMedidaChange()"
+                        required
+                    >
+                        <option [ngValue]="null" disabled>
+                            Seleccione una unidad de trabajo...
+                        </option>
+                        <option
+                            *ngFor="let u of unidadesDeMedida"
+                            [ngValue]="u.value"
+                        >
+                            {{ u.label }}
+                        </option>
+                    </select>
+
+                    <!-- Capacidad -->
+                    <div>
+                        <p>Capacidad</p>
+                        <input
+                            placeholder="Capacidad"
+                            name="capacidad"
+                            [(ngModel)]="modeloEquipo.capacidad"
+                            class="form-control my-2"
+                            type="number"
+                            required
+                            #capacidad="ngModel"
+                        />
+                        @if (capacidad.invalid && (capacidad.dirty ||
+                        capacidad.touched)) { @if
+                        (capacidad.errors!['required']) {
+                        <div class="alert alert-danger">
+                            Capacidad requerida
+                        </div>
+                        } }
+                    </div>
+
+                    <!-- Frecuencias -->
+                    <div>
+                        <p>
+                            Frecuencia de mantenimiento ({{
+                                modeloEquipo.unidadMedida === "HT"
+                                    ? "Horas de trabajo"
+                                    : "Kilómetros"
+                            }})
+                        </p>
+                        <input
+                            type="number"
+                            class="form-control my-2"
+                            name="frecuenciaUnidadMedida"
+                            [(ngModel)]="modeloEquipo.frecuenciaUnidadMedida"
+                            required
+                            min="1"
+                            #frecuenciaUnidadMedida="ngModel"
+                        />
+                        <div
+                            *ngIf="
+                                frecuenciaUnidadMedida.invalid &&
+                                (frecuenciaUnidadMedida.dirty ||
+                                    frecuenciaUnidadMedida.touched)
+                            "
+                        >
+                            <div
+                                *ngIf="frecuenciaUnidadMedida.errors?.['required']"
+                                class="alert alert-danger"
+                            >
+                                Este campo es obligatorio
+                            </div>
+                            <div
+                                *ngIf="frecuenciaUnidadMedida.errors?.['min']"
+                                class="alert alert-danger"
+                            >
+                                Debe ser mayor a 0
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <p>Frecuencia de mantenimiento (Tiempo en meses)</p>
+                        <input
+                            type="number"
+                            class="form-control my-2"
+                            name="frecuenciaTiempo"
+                            [(ngModel)]="modeloEquipo.frecuenciaTiempo"
+                            required
+                            min="1"
+                            #frecuenciaTiempo="ngModel"
+                        />
+                        <div
+                            *ngIf="
+                                frecuenciaTiempo.invalid &&
+                                (frecuenciaTiempo.dirty ||
+                                    frecuenciaTiempo.touched)
+                            "
+                        >
+                            <div
+                                *ngIf="frecuenciaTiempo.errors?.['required']"
+                                class="alert alert-danger"
+                            >
+                                Este campo es obligatorio
+                            </div>
+                            <div
+                                *ngIf="frecuenciaTiempo.errors?.['min']"
+                                class="alert alert-danger"
+                            >
+                                Debe ser mayor a 0
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="row justify-content-between mt-3">
+                        <div class="col-4">
+                            <button
+                                type="submit"
+                                class="btn btn-primary"
+                                [disabled]="modeloForm.invalid"
+                            >
+                                {{ modeloEquipo.id ? "Modificar" : "Agregar" }}
+                            </button>
+                        </div>
+                        <div class="col-4">
+                            <button
+                                type="button"
+                                class="btn btn-secondary w-100"
+                                data-bs-dismiss="modal"
+                                (click)="onOpen()"
+                            >
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

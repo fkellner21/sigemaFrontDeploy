@@ -1,0 +1,404 @@
+<div class="titulo text-center my-1">Listado de trámites</div>
+ 
+<div class="row me-0">
+    <div class="row pe-0 justify-content-between align-items-center">
+        <div class="col-md-4">
+            <mat-form-field class="w-100">
+                <mat-label>Buscar</mat-label>
+                <input matInput (keyup)="applyFilter($event)" #input />
+            </mat-form-field>
+        </div>
+        <div class="col-md-8 row justify-content-end">
+            <div
+                class="col-md-6 col-lg-4 text-end"
+                *ngIf="usuario.unidad != null"
+            >
+                <select
+                    name="tipoTramite"
+                    class="form-select text-center"
+                    [(ngModel)]="tipoTramite"
+                >
+                    <option [ngValue]="null" disabled>
+                        Seleccione una tipo de trámite
+                    </option>
+                    <option *ngFor="let tipo of tipos" [ngValue]="tipo.key">
+                        {{ tipo.label }}
+                    </option>
+                </select>
+            </div>
+            <div
+                class="col-md-5 col-lg-3 pe-0 text-end"
+                *ngIf="usuario?.unidad != null"
+            >
+                <button
+                    (click)="abrirFormularioTramite()"
+                    class="btn btn-dark w-100"
+                >
+                    Nuevo Trámite
+                </button>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <form [formGroup]="form">
+                <mat-form-field>
+                    <mat-label>Defina un rango de fechas</mat-label>
+                    <mat-date-range-input
+                        [rangePicker]="picker"
+                        formGroupName="fechaRango"
+                    >
+                        <input
+                            matStartDate
+                            formControlName="start"
+                            placeholder="Desde"
+                        />
+                        <input
+                            matEndDate
+                            formControlName="end"
+                            placeholder="Hasta"
+                        />
+                    </mat-date-range-input>
+                    <mat-datepicker-toggle
+                        matIconSuffix
+                        [for]="picker"
+                    ></mat-datepicker-toggle>
+                    <mat-date-range-picker (closed)="onDateRangeSelected()" #picker></mat-date-range-picker>
+                </mat-form-field>
+            </form>
+        </div>
+    </div>
+    <mat-tab-group class="my-3">
+        <mat-tab label="Pendientes / En Curso">
+            <table
+                mat-table
+                [dataSource]="dataSourcePendientes"
+                class="mat-elevation-z8 table table-striped table-hover"
+            >
+                <ng-container matColumnDef="Origen">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        class="bg-dark text-white"
+                    >
+                        Origen
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.unidadOrigen?.nombre || "" }}
+                    </td>
+                </ng-container>
+ 
+                <ng-container matColumnDef="Destino">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        class="bg-dark text-white"
+                    >
+                        Destino
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.unidadDestino?.nombre || "Todos" }}
+                    </td>
+                </ng-container>
+ 
+                <ng-container matColumnDef="Fecha">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        class="bg-dark text-white"
+                    >
+                        Fecha
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{
+                            element.fechaInicio
+                                ? (element.fechaInicio | date : "dd/MM/yyyy")
+                                : ""
+                        }}
+                    </td>
+                </ng-container>
+ 
+                <ng-container matColumnDef="Solicitante">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        class="bg-dark text-white"
+                    >
+                        Solicitante
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{
+                            (element.usuario?.grado?.nombre || " ") +
+                                " " +
+                                (element.usuario?.nombreCompleto ||
+                                    "Sin solicitante")
+                        }}
+                    </td>
+                </ng-container>
+ 
+                <ng-container matColumnDef="Tipo">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        class="bg-dark text-white"
+                    >
+                        Tipo
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ getTipoLabel(element.tipoTramite) }}
+                    </td>
+                </ng-container>
+ 
+                <ng-container matColumnDef="Estado">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        class="bg-dark text-white"
+                    >
+                        Estado
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ getEstadoLabel(element.estado) }}
+                    </td>
+                </ng-container>
+ 
+                <ng-container matColumnDef="acciones">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        class="bg-dark text-white text-center"
+                    >
+                        Acciones
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-center">
+                        <button
+                            *ngIf="usuario?.unidad != null"
+                            class="btn btn-dark btn-sm me-2"
+                            (click)="abrirFormularioTramite(element.id)"
+                            title="Editar tramite"
+                        >
+                            <i class="bi bi-search"></i>
+                        </button>
+                        <button
+                            *ngIf="
+                                (element.estado == 'EnTramite' ||
+                                    element.estado == 'Iniciado') &&
+                                (authservice.getRol() == 'ROLE_ADMINISTRADOR' ||
+                                    authservice.getRol() == 'ROLE_BRIGADA' ||
+                                    usuario?.unidad?.id ==
+                                        element.unidadDestino?.id)
+                            "
+                            class="btn btn-success btn-sm me-2"
+                            (click)="aprobarTramite(element.id)"
+                            title="Aprobar tramite"
+                        >
+                            <i class="bi bi-hand-thumbs-up-fill"></i>
+                        </button>
+                        <button
+                            *ngIf="
+                                (element.estado == 'EnTramite' ||
+                                    element.estado == 'Iniciado') &&
+                                (authservice.getRol() == 'ROLE_ADMINISTRADOR' ||
+                                    authservice.getRol() == 'ROLE_BRIGADA' ||
+                                    usuario?.unidad?.id ==
+                                        element.unidadDestino?.id)
+                            "
+                            class="btn btn-danger btn-sm me-2"
+                            (click)="rechazarTramite(element.id)"
+                            title="Rechazar tramite"
+                        >
+                            <i class="bi bi-hand-thumbs-down-fill"></i>
+                        </button>
+                    </td>
+                </ng-container>
+ 
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr
+                    mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                ></tr>
+                <tr class="mat-row" *matNoDataRow>
+                    <td
+                        class="mat-cell"
+                        [attr.colspan]="displayedColumns.length"
+                    >
+                        No existen datos para la consulta "{{ input.value }}"
+                    </td>
+                </tr>
+            </table>
+        </mat-tab>
+ 
+        <mat-tab label="Finalizados">
+            <table
+                mat-table
+                [dataSource]="dataSourceFinalizados"
+                class="mat-elevation-z8 table table-striped table-hover"
+            >
+                <ng-container matColumnDef="Origen">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        class="bg-dark text-white"
+                    >
+                        Origen
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.unidadOrigen?.nombre || "" }}
+                    </td>
+                </ng-container>
+ 
+                <ng-container matColumnDef="Destino">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        class="bg-dark text-white"
+                    >
+                        Destino
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ element.unidadDestino?.nombre || "Todos" }}
+                    </td>
+                </ng-container>
+ 
+                <ng-container matColumnDef="Fecha">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        class="bg-dark text-white"
+                    >
+                        Fecha
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{
+                            element.fechaInicio
+                                ? (element.fechaInicio | date : "dd/MM/yyyy")
+                                : ""
+                        }}
+                    </td>
+                </ng-container>
+ 
+                <ng-container matColumnDef="Solicitante">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        class="bg-dark text-white"
+                    >
+                        Solicitante
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{
+                            (element.usuario?.grado?.nombre || " ") +
+                                " " +
+                                (element.usuario?.nombreCompleto ||
+                                    "Sin solicitante")
+                        }}
+                    </td>
+                </ng-container>
+ 
+                <ng-container matColumnDef="Tipo">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        class="bg-dark text-white"
+                    >
+                        Tipo
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ getTipoLabel(element.tipoTramite) }}
+                    </td>
+                </ng-container>
+ 
+                <ng-container matColumnDef="Estado">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        class="bg-dark text-white"
+                    >
+                        Estado
+                    </th>
+                    <td mat-cell *matCellDef="let element">
+                        {{ getEstadoLabel(element.estado) }}
+                    </td>
+                </ng-container>
+ 
+                <ng-container matColumnDef="acciones">
+                    <th
+                        mat-header-cell
+                        *matHeaderCellDef
+                        class="bg-dark text-white text-center"
+                    >
+                        Acciones
+                    </th>
+                    <td mat-cell *matCellDef="let element" class="text-center">
+                        <button
+                            *ngIf="usuario?.unidad != null"
+                            class="btn btn-dark btn-sm me-2"
+                            (click)="abrirFormularioTramite(element.id)"
+                            title="Ver tramite"
+                        >
+                            <i class="bi bi-search"></i>
+                        </button>
+                    </td>
+                </ng-container>
+ 
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr
+                    mat-row
+                    *matRowDef="let row; columns: displayedColumns"
+                ></tr>
+                <tr class="mat-row" *matNoDataRow>
+                    <td
+                        class="mat-cell"
+                        [attr.colspan]="displayedColumns.length"
+                    >
+                        No existen datos para la consulta "{{ input.value }}"
+                    </td>
+                </tr>
+            </table>
+        </mat-tab>
+    </mat-tab-group>
+</div>
+ 
+<div class="text-center my-3" *ngIf="isLoading">
+    <div class="spinner-border text-dark" role="status">
+        <span class="visually-hidden">Cargando...</span>
+    </div>
+</div>
+ 
+<tramite-equipo-form
+    *ngIf="mostrarFormularioEquipo"
+    [tramite]="tramiteSeleccionado"
+    [unidades]="unidades"
+    (cancelEventEmiter)="cerrarFormularios()"
+    (newTramiteEventEmitter)="guardarTramite($event)"
+></tramite-equipo-form>
+<tramite-repuesto-form
+    *ngIf="mostrarFormularioRepuesto"
+    [tramite]="tramiteSeleccionado"
+    [unidades]="unidades"
+    (cancelEventEmiter)="cerrarFormularios()"
+    (newTramiteEventEmitter)="guardarTramite($event)"
+></tramite-repuesto-form>
+<tramite-usuario-form
+    *ngIf="mostrarFormularioUsuario"
+    [tramite]="tramiteSeleccionado"
+    [unidades]="unidades"
+    (cancelEventEmiter)="cerrarFormularios()"
+    (newTramiteEventEmitter)="guardarTramite($event)"
+></tramite-usuario-form>
+<tramite-info-form
+    *ngIf="mostrarFormularioInfo"
+    [tramite]="tramiteSeleccionado"
+    [unidades]="unidades"
+    (cancelEventEmiter)="cerrarFormularios()"
+    (newTramiteEventEmitter)="guardarTramite($event)"
+></tramite-info-form>
+ 
+<style>
+    ::ng-deep .mat-mdc-tab-body.mat-mdc-tab-body-active {
+        z-index: 0 !important;
+        position: relative !important;
+    }
+ 
+    ::ng-deep .mat-mdc-tab-header{
+        z-index: 0 !important;
+    }
+</style>

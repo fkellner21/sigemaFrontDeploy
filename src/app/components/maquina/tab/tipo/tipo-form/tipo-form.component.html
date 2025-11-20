@@ -1,0 +1,80 @@
+<div class="modal" tabindex="-1" style="display: block">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{ tipoEquipo.id > 0 ? "Editar " : "Agregar " }} tipo de equipo
+        </h5>
+        <button
+          (click)="onOpen()"
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="onSubmit(tipoForm)" #tipoForm="ngForm">
+          <div>
+            <p>Código</p>
+            <input
+              placeholder="Código"
+              name="codigo"
+              [(ngModel)]="tipoEquipo.codigo"
+              class="form-control my-2"
+              required
+              #codigo="ngModel"
+            />
+            @if(codigo.invalid && (codigo.dirty || codigo.touched)){
+            @if(codigo.errors!['required']){
+            <div class="alert alert-danger">Código requerido</div>
+            } }
+          </div>
+          <div>
+            <p>Descripción</p>
+            <input
+              placeholder="Descripción"
+              name="nombre"
+              [(ngModel)]="tipoEquipo.nombre"
+              class="form-control my-2"
+            />
+          </div>
+
+          <p>Tarea principal</p>
+          <select
+            class="form-control my-2"
+            [(ngModel)]="tipoEquipo.tarea"
+            name="tareaEquipo"
+            required
+          >
+            <option value="">Seleccione una tarea</option>
+            <option *ngFor="let tarea of tareas" [value]="tarea">
+              {{ tarea }}
+            </option>
+          </select>
+          <div class="row justify-content-between mt-3">
+            <div class="col-4">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="tipoForm.invalid"
+              >
+                {{ tipoEquipo.id > 0 ? "Modificar" : "Agregar" }}
+              </button>
+            </div>
+            <div class="col-4">
+              <button
+                type="button"
+                class="btn btn-secondary w-100"
+                data-bs-dismiss="modal"
+                (click)="onOpen()"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

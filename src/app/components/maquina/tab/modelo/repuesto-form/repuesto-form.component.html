@@ -1,0 +1,109 @@
+<div class="modal" tabindex="-1" style="display: block">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{ repuesto.id > 0 ? "Editar " : "Agregar " }} {{ titulo }}
+        </h5>
+        <button
+          (click)="onOpen()"
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="onSubmit(repuestoForm)" #repuestoForm="ngForm">
+          <div>
+            <p>Nombre</p>
+            <input
+              placeholder="Nombre"
+              name="nombre"
+              [(ngModel)]="repuesto.nombre"
+              class="form-control my-2"
+              required
+              #nombre="ngModel"
+            />
+            @if(nombre.invalid && (nombre.dirty || nombre.touched)){
+            @if(nombre.errors!['required']){
+            <div class="alert alert-danger">Nombre requerido</div>
+            } }
+          </div>
+          <div>
+            <p>Código SICE</p>
+            <input
+              placeholder="Código SICE"
+              name="codigoSICE"
+              [(ngModel)]="repuesto.codigoSICE"
+              class="form-control my-2"
+              #codigoSICE="ngModel"
+            />
+          </div>
+          <div>
+            <p>Características</p>
+            <input
+              placeholder="Características"
+              name="caracteristica"
+              [(ngModel)]="repuesto.caracteristicas"
+              class="form-control my-2"
+              required
+              #caracteristicas="ngModel"
+            />
+            @if(caracteristicas.invalid && (caracteristicas.dirty ||
+            caracteristicas.touched)){ @if(caracteristicas.errors!['required']){
+            <div class="alert alert-danger">Características requeridas</div>
+            } }
+          </div>
+          <div>
+            <p>Cantidad</p>
+            <input
+              type="number"
+              placeholder="Cantidad"
+              name="cantidad"
+              [(ngModel)]="repuesto.cantidad"
+              class="form-control my-2"
+              required
+              #cantidad="ngModel"
+            />
+            @if(cantidad.invalid && (cantidad.dirty || cantidad.touched)){
+            @if(cantidad.errors!['required']){
+            <div class="alert alert-danger">Cantidad requerida</div>
+            } }
+          </div>
+          <div>
+            <p>Observaciones</p>
+            <input
+              placeholder="Observaciones"
+              name="observaciones"
+              [(ngModel)]="repuesto.observaciones"
+              class="form-control my-2"
+            />
+          </div>
+
+          <div class="row justify-content-between mt-3">
+            <div class="col-4">
+              <button
+                type="submit"
+                class="btn btn-primary"
+                [disabled]="repuestoForm.invalid"
+              >
+                {{ repuesto.id > 0 ? "Modificar" : "Agregar" }}
+              </button>
+            </div>
+            <div class="col-4">
+              <button
+                type="button"
+                class="btn btn-secondary w-100"
+                data-bs-dismiss="modal"
+                (click)="onOpen()"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

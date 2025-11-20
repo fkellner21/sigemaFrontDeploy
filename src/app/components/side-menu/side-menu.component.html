@@ -1,0 +1,92 @@
+<div class="sidebar-container">
+    <mat-nav-list class="menu-items">
+        <!-- Ítems del menú -->
+        <a mat-list-item routerLink="/home"
+            ><mat-icon>dashboard</mat-icon
+            ><span class="ms-2">Panel principal</span></a
+        >
+        <a mat-list-item routerLink="/tabEquipos"
+            ><mat-icon>front_loader</mat-icon
+            ><span class="ms-2">Maquinaria</span></a
+        >
+
+        <a mat-list-item routerLink="/mantenimientos">
+            <mat-icon>build_circle</mat-icon>
+            <span class="ms-2">Mantenimientos</span>
+        </a>
+        <a mat-list-item routerLink="/tramites"
+            ><mat-icon>assignment</mat-icon
+            ><span class="ms-2">Trámites</span></a
+        >
+
+        <a mat-list-item (click)="abrirModalNotificaciones()">
+            <mat-icon>notifications</mat-icon>
+            <span class="ms-2">
+                Notificaciones
+                <span *ngIf="notificaciones.length > 0" class="badge-red">
+                    {{ notificaciones.length }}
+                </span>
+            </span>
+        </a>
+
+        <mat-list-item (click)="toggleReportes()" style="cursor: pointer">
+            <mat-icon>download</mat-icon>
+            <span class="ms-2">Descarga de reportes</span>
+            <mat-icon style="margin-left: auto">{{
+                isReportesOpen ? "expand_less" : "expand_more"
+            }}</mat-icon>
+        </mat-list-item>
+
+        <div *ngIf="isReportesOpen" class="sub-menu">
+            <a mat-list-item (click)="generarReporteIndicadoresGestion()"
+                ><mat-icon>query_stats</mat-icon
+                ><span class="ms-2">Indicadores de gestión</span></a
+            >
+            <a mat-list-item (click)="generarReportePrevisiones()"
+                ><mat-icon>bar_chart</mat-icon
+                ><span class="ms-2">Previsión anual</span></a
+            >
+        </div>
+
+        <mat-list-item (click)="toggleConfig()" style="cursor: pointer">
+            <mat-icon>settings</mat-icon>
+            <span class="ms-2">Configuración</span>
+            <mat-icon style="margin-left: auto">{{
+                isConfigOpen ? "expand_less" : "expand_more"
+            }}</mat-icon>
+        </mat-list-item>
+
+        <div *ngIf="isConfigOpen" class="sub-menu">
+            <a mat-list-item (click)="abrirModalPerfil()">
+                <mat-icon>person</mat-icon>
+                <span class="ms-2">Perfil</span>
+            </a>
+            <a mat-list-item routerLink="/usuarios">
+                <mat-icon>group</mat-icon>
+                <span class="ms-2">Usuarios</span>
+            </a>
+            <a mat-list-item routerLink="/unidades">
+                <mat-icon>home_work</mat-icon>
+                <span class="ms-2">Unidades</span>
+            </a>
+            <a mat-list-item routerLink="/grados">
+                <mat-icon>admin_panel_settings</mat-icon>
+                <span class="ms-2">Grados</span>
+            </a>
+            
+            <a *ngIf="obtenerRolUsuario() == 'ROLE_ADMINISTRADOR'" mat-list-item (click)="abrirLogs()">
+                <mat-icon>description</mat-icon>
+                <span class="ms-2">Logs</span>
+            </a>
+        </div>
+    </mat-nav-list>
+
+    <div class="logout-wrapper">
+        <mat-nav-list class="logout-list">
+            <a mat-list-item (click)="onClick($event)">
+                <mat-icon>exit_to_app</mat-icon>
+                <span class="ms-2">Salir</span>
+            </a>
+        </mat-nav-list>
+    </div>
+</div>

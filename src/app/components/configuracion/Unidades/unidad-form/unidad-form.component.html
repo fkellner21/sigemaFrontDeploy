@@ -1,0 +1,103 @@
+<div class="modal" tabindex="-1" style="display: block">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    {{ unidad.id > 0 ? "Editar " : "Agregar " }} unidad
+                </h5>
+                <button
+                    (click)="onOpen()"
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+            </div>
+            <div class="modal-body">
+                <form (ngSubmit)="onSubmit(unidadForm)" #unidadForm="ngForm">
+                    <div>
+                        <p>Nombre</p>
+                        <input
+                            placeholder="Nombre de la unidad"
+                            name="Nombre"
+                            [(ngModel)]="unidad.nombre"
+                            class="form-control my-2"
+                            required
+                            #codigo="ngModel"
+                        />
+                        @if(codigo.invalid && (codigo.dirty || codigo.touched)){
+                        @if(codigo.errors!['required']){
+                        <div class="alert alert-danger">Nombre requerido</div>
+                        } }
+                    </div>
+                    <div>
+                        <p>Latitud</p>
+                        <input
+                            placeholder="Latitud de la unidad Ej: 23.336"
+                            name="Latitud"
+                            [(ngModel)]="unidad.latitud"
+                            class="form-control my-2"
+                            type="number"
+                        />
+                    </div>
+                    <div>
+                        <p>Longitud</p>
+                        <input
+                            placeholder="Longitud de la unidad Ej: 23.336"
+                            name="Longitud"
+                            [(ngModel)]="unidad.longitud"
+                            class="form-control my-2"
+                            type="number"
+                        />
+                    </div>
+<div>
+  <p>Email</p>
+  <input
+    type="email"
+    placeholder="Email de la unidad"
+    [(ngModel)]="nuevoEmail"
+    name="email"
+    required
+    #emailModel="ngModel"
+    email
+  />
+  <div *ngIf="emailModel.invalid && (emailModel.dirty || emailModel.touched)" class="alert alert-danger">
+    <div *ngIf="emailModel.errors?.['required']">El email es obligatorio.</div>
+    <div *ngIf="emailModel.errors?.['email']">El email no es válido.</div>
+  </div>
+</div>
+
+
+                    <p class="mb-0 mt-3" for="flexSwitchCheck">¿Es gran unidad?</p>
+                    <div class="form-check form-switch mt-0 mb-3">
+                        <input style="width: 2.7rem; height: 1.5rem;"
+                            class="form-check-input"
+                            type="checkbox"
+                            id="flexSwitchCheck"
+                            [(ngModel)]="unidad.esGranUnidad"
+                            name="esGranUnidad"
+                        />
+                    </div>
+                    <div class="row justify-content-between mt-5">
+                        <div class="col-4">
+<button type="submit" class="btn btn-primary w-100" [disabled]="unidadForm.invalid || emailModel.invalid">
+  {{ unidad.id > 0 ? "Modificar" : "Agregar" }}
+</button>
+
+                        </div>
+                        <div class="col-4">
+                            <button
+                                type="button"
+                                class="btn btn-secondary w-100"
+                                data-bs-dismiss="modal"
+                                (click)="onOpen()"
+                            >
+                                Cerrar
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

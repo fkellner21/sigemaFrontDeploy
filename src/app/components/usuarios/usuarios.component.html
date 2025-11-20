@@ -1,0 +1,177 @@
+<div class="titulo text-center my-1">Listado de usuarios</div>
+
+<div class="row me-0">
+    <div class="row pe-0 justify-content-between align-items-center">
+        <div class="col-4">
+            <mat-form-field class="w-100">
+                <mat-label>Buscar</mat-label>
+                <input matInput (keyup)="applyFilter($event)" #input />
+            </mat-form-field>
+        </div>
+        <div class="col-4 pe-0 text-end">
+            <button (click)="abrirFormularioUsuario()" class="btn btn-dark">
+                Nuevo usuario
+            </button>
+        </div>
+    </div>
+    <div>
+        <table
+            mat-table
+            [dataSource]="dataSource"
+            class="mat-elevation-z8 table table-striped table-hover"
+        >
+            <ng-container matColumnDef="Grado">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white"
+                >
+                    Grado
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{ element.grado?.nombre || "Sin grado" }}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="Cedula">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white"
+                >
+                    Cédula
+                </th>
+                <td mat-cell *matCellDef="let element">{{ element.cedula }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="Nombre">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white"
+                >
+                    Nombre
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{ element.nombreCompleto }}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="Unidad">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white"
+                >
+                    Unidad
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{ element.unidad?.nombre || "Sin unidad" }}
+                </td>
+            </ng-container>
+
+            <ng-container matColumnDef="Rol">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white"
+                >
+                    Rol
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{ getRolLabel(element.rol) }}
+                </td>
+            </ng-container>
+
+            <!-- Columna Acciones -->
+            <ng-container matColumnDef="acciones">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white text-center"
+                >
+                    Acciones
+                </th>
+                <td mat-cell *matCellDef="let element" class="text-center">
+                    <button
+                        *ngIf="
+                            authservice.getIdUsuario() == element.id ||
+                            authservice.getRol() == 'ROLE_ADMINISTRADOR' ||
+                            (authservice.getRol() == 'ROLE_BRIGADA' &&
+                                element.rol != 'ADMINISTRADOR')
+                        "
+                        class="btn btn-dark btn-sm me-2"
+                        (click)="abrirFormularioUsuario(element)"
+                        title="Editar usuario"
+                    >
+                        <i class="bi bi-pencil"></i>
+                    </button>
+<!-- Botón eliminar usuario -->
+<button
+    *ngIf="
+        authservice.getIdUsuario() != element.id &&
+        (
+            authservice.getRol() == 'ROLE_ADMINISTRADOR' || 
+            (
+                authservice.getRol() == 'ROLE_BRIGADA' &&
+                element.rol != 'ADMINISTRADOR' &&
+                element.rol != 'BRIGADA'
+            )
+        )
+    "
+    class="btn btn-danger btn-sm"
+    (click)="eliminarUsuario(element.id)"
+    title="Eliminar usuario"
+>
+    <i class="bi bi-trash"></i>
+</button>
+
+                </td>
+            </ng-container>
+
+                                <!-- <button
+                        *ngIf="
+                            authservice.getIdUsuario() != element.id &&
+                            (authservice.getRol() == 'ROLE_ADMINISTRADOR' ||
+                                (authservice.getRol() == 'ROLE_BRIGADA' &&
+                                    element.rol != 'ADMINISTRADOR' &&
+                                    element.rol != 'BRIGADA') ||
+                                (authservice.getIdUnidad() ==
+                                    element.unidad.id &&
+                                    authservice.getIdUsuario() !=
+                                        element.usuario?.id))
+                        "
+                        class="btn btn-danger btn-sm"
+                        (click)="eliminarUsuario(element.id)"
+                        title="Eliminar usuario"
+                    >
+                        <i class="bi bi-trash"></i>
+                    </button> -->
+
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" [attr.colspan]="displayedColumns.length">
+                    No existen datos para la consulta "{{ input.value }}"
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+<div class="text-center my-3" *ngIf="isLoading">
+    <div class="spinner-border text-dark" role="status">
+        <span class="visually-hidden">Cargando...</span>
+    </div>
+</div>
+
+<app-usuario-form
+    *ngIf="mostrarFormulario"
+    [usuario]="usuarioSeleccionado"
+    [rolesOriginal]="roles"
+    [grados]="grados"
+    [unidades]="unidades"
+    (cerrar)="cerrarFormulario()"
+    (guardarUsuario)="guardarUsuario($event)"
+></app-usuario-form>

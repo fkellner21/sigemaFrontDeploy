@@ -1,0 +1,196 @@
+<div class="titulo text-center my-1">Listado de mantenimientos</div>
+
+<div class="row me-0">
+    <!-- Filtros de fecha -->
+    <div class="row pe-0 mb-3">
+        <div class="col-md-3">
+            <mat-form-field class="w-100">
+                <mat-label>Fecha desde</mat-label>
+                <input
+                    matInput
+                    [matDatepicker]="pickerDesde"
+                    [(ngModel)]="fechaDesde"
+                    (dateChange)="aplicarFiltro()"
+                    readonly
+                />
+                <mat-datepicker-toggle
+                    matSuffix
+                    [for]="pickerDesde"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #pickerDesde></mat-datepicker>
+            </mat-form-field>
+        </div>
+
+        <div class="col-md-3">
+            <mat-form-field class="w-100">
+                <mat-label>Fecha hasta</mat-label>
+                <input
+                    matInput
+                    [matDatepicker]="pickerHasta"
+                    [(ngModel)]="fechaHasta"
+                    (dateChange)="aplicarFiltro()"
+                    readonly
+                />
+                <mat-datepicker-toggle
+                    matSuffix
+                    [for]="pickerHasta"
+                ></mat-datepicker-toggle>
+                <mat-datepicker #pickerHasta></mat-datepicker>
+            </mat-form-field>
+        </div>
+    </div>
+
+    <div>
+        <table
+            mat-table
+            [dataSource]="dataSource"
+            class="mat-elevation-z8 table table-striped table-hover"
+        >
+            <!-- EQUIPO -->
+
+            <ng-container matColumnDef="equipo">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white"
+                >
+                    Equipo
+                </th>
+                <td mat-cell *matCellDef="let m">
+                    {{ m.equipo.modeloEquipo.tipoEquipo.codigo }}
+                    {{ m.equipo.matricula }}
+                </td>
+            </ng-container>
+            <!-- FECHA -->
+            <ng-container matColumnDef="fecha">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white"
+                >
+                    Fecha
+                </th>
+                <td mat-cell *matCellDef="let m">
+                    {{ m.fechaMantenimiento | date : "dd/MM/yyyy" }}
+                </td>
+            </ng-container>
+
+            <!-- DESCRIPCIÓN -->
+            <ng-container matColumnDef="detalle">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white"
+                >
+                    Descripción
+                </th>
+                <td mat-cell *matCellDef="let m">
+                    {{ m.descripcion }}
+                </td>
+            </ng-container>
+
+            <!-- CANTIDAD -->
+            <ng-container matColumnDef="cantidad">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white"
+                >
+                    Uso
+                </th>
+                <td mat-cell *matCellDef="let m">
+                    {{ m.cantidadUnidadMedida }}
+                    {{ m.unidadMedida === "HT" ? " Horas" : " Km" }}
+                </td>
+            </ng-container>
+            <!-- ES SERVICE -->
+            <ng-container matColumnDef="service">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white"
+                >
+                    ¿Es service?
+                </th>
+                <td mat-cell *matCellDef="let m">
+                    <span
+                        class="badge"
+                        [class.bg-success]="m.esService"
+                        [class.bg-secondary]="!m.esService"
+                    >
+                        {{ m.esService ? "Sí" : "No" }}
+                    </span>
+                </td>
+            </ng-container>
+
+            <!-- ACCIONES -->
+            <ng-container matColumnDef="acciones">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white text-center"
+                >
+                    Acciones
+                </th>
+                <td mat-cell *matCellDef="let m" class="text-center">
+                    <button
+                        *ngIf="
+                            authservice.getRol() == 'ROLE_ADMINISTRADOR' ||
+                            authservice.getRol() == 'ROLE_BRIGADA' ||
+                            authservice.getRol() == 'ROLE_ADMINISTRADOR_UNIDAD'
+                        "
+                        class="btn btn-dark btn-sm me-2"
+                        (click)="abrirFormulario(m.id ?? 0)"
+                        title="Editar"
+                    >
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                    <button
+                        *ngIf="
+                            authservice.getRol() == 'ROLE_ADMINISTRADOR' ||
+                            authservice.getRol() == 'ROLE_BRIGADA' ||
+                            authservice.getRol() == 'ROLE_ADMINISTRADOR_UNIDAD'
+                        "
+                        class="btn btn-danger btn-sm"
+                        (click)="eliminarMantenimiento(m.id ?? 0)"
+                        title="Eliminar"
+                    >
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+                <td
+                    class="mat-cell"
+                    [attr.colspan]="displayedColumns.length"
+                    class="text-center py-4"
+                >
+                    <div *ngIf="!isLoading">
+                        <i class="bi bi-info-circle me-2"></i>
+                        No se encontraron mantenimientos en el rango de fechas
+                        seleccionado
+                    </div>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<div class="text-center my-3" *ngIf="isLoading">
+    <div class="spinner-border text-dark" role="status">
+        <span class="visually-hidden">Cargando...</span>
+    </div>
+    <p class="mt-2">Buscando mantenimientos...</p>
+</div>
+<div *ngIf="mostrarFormulario">
+    <mantenimiento-form
+        [equipo]="equipo"
+        [mantenimiento]="nuevoMantenimiento"
+        (cerrarFormulario)="cerrarFormulario()"
+        (mantenimientoAgregado)="cargarMantenimientos()"
+    ></mantenimiento-form>
+</div>

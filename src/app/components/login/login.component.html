@@ -1,0 +1,59 @@
+<div class="fondo">
+    <div *ngIf="isLoading" class="form text-center">
+        <p><strong> Cargando... </strong></p>
+        <div class="spinner-border text-dark" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    </div>
+
+    <div *ngIf="!isLoading">
+        <form (ngSubmit)="onSubmit(login)" class="form" #login="ngForm">
+            <!-- Grid: col1 & col2 tienen 3 filas; col3 utiliza solo las dos primeras filas -->
+
+            <label for="username" class="u-label"
+                ><img src="/assets/img/flechitaazul.gif" alt="" />
+                Usuario:</label
+            >
+            <input
+                type="text"
+                id="username"
+                name="username"
+                [(ngModel)]="loginDTO.username"
+                required
+                #username="ngModel"
+                size="30"
+                class="u-input"
+            />
+            <img src="/assets/img/sistema.gif" alt="" class="u-img" />
+
+            <label for="password" class="p-label">
+                <img src="/assets/img/flechitaazul.gif" alt="" />
+                Contraseña:</label
+            >
+            <input
+                type="password"
+                id="password"
+                name="password"
+                [(ngModel)]="loginDTO.password"
+                required
+                #password="ngModel"
+                size="30"
+                class="p-input"
+            />
+            <img src="/assets/img/gestion.GIF" alt="" class="p-img" />
+            <div class="btn-spacer"></div>
+            <input
+                class="submit btn-login"
+                type="submit"
+                [disabled]="login.invalid"
+                value="Login"
+            />
+            <div class="btn-empty"></div>
+            <div class="explain full-width">
+                Ante problemas de login, elimine los archivos temporales de
+                internet y revise la configuración del explorador
+                <a href="#">Click aquí</a>
+            </div>
+        </form>
+    </div>
+</div>

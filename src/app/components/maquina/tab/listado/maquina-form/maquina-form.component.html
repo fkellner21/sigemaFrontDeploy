@@ -1,0 +1,238 @@
+<div class="modal" tabindex="-1" style="display: block">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    {{ equipoForm.id ? "Actualizar equipo" : "Agregar equipo" }}
+                </h5>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                    (click)="onCancel()"
+                ></button>
+            </div>
+
+            <div class="modal-body">
+                <div *ngIf="isLoading" class="form text-center">
+                    <p><strong> Cargando... </strong></p>
+                    <div class="spinner-border text-dark" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+                <form
+                    #maquinaForm="ngForm"
+                    (ngSubmit)="onSubmit()"
+                    class="row"
+                    *ngIf="!isLoading"
+                >
+                    <!-- UNIDAD -->
+                    <div class="col-12">
+                        <p>Unidad</p>
+                        <select
+                            class="form-control my-2"
+                            [(ngModel)]="equipoForm.idUnidad"
+                            name="unidad"
+                            [disabled]="
+                                authservice.getRol() == 'ROLE_UNIDAD' ||
+                                authservice.getRol() ==
+                                    'ROLE_ADMINISTRADOR_UNIDAD'
+                            "
+                            required
+                        >
+                            <option value="">Seleccione una unidad</option>
+                            <option
+                                *ngFor="let unidad of unidades"
+                                [value]="unidad.id"
+                            >
+                                {{ unidad.nombre }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <!-- TIPO -->
+                        <p>Tipo de equipo</p>
+                        <select
+                            class="form-control my-2"
+                            [(ngModel)]="tipoSeleccionado"
+                            name="tipoEquipo"
+                            (change)="onTipoEquipoChange($event)"
+                            [disabled]="
+                                authservice.getRol() == 'ROLE_UNIDAD' ||
+                                authservice.getRol() ==
+                                    'ROLE_ADMINISTRADOR_UNIDAD'
+                            "
+                            required
+                        >
+                            <option value="">Seleccione un tipo</option>
+                            <option
+                                *ngFor="let tipo of tiposEquipo"
+                                [value]="tipo.id"
+                            >
+                                {{ tipo.codigo }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <!-- MARCA -->
+                        <p>Marca</p>
+                        <select
+                            class="form-control my-2"
+                            [(ngModel)]="marcaSeleccionada"
+                            name="marca"
+                            (change)="onMarcaChange($event)"
+                            [disabled]="
+                                !tipoSeleccionado ||
+                                authservice.getRol() == 'ROLE_UNIDAD' ||
+                                authservice.getRol() ==
+                                    'ROLE_ADMINISTRADOR_UNIDAD'
+                            "
+                            required
+                        >
+                            <option value="">Seleccione una marca</option>
+                            <option
+                                *ngFor="let marca of marcasFiltradas"
+                                [value]="marca.id"
+                            >
+                                {{ marca.nombre }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <!-- MODELO -->
+                        <p>Modelo</p>
+                        <select
+                            class="form-control my-2"
+                            [(ngModel)]="equipoForm.idModeloEquipo"
+                            name="modelo"
+                            (change)="onModeloChange($event)"
+                            [disabled]="
+                                !marcaSeleccionada ||
+                                authservice.getRol() == 'ROLE_UNIDAD' ||
+                                authservice.getRol() ==
+                                    'ROLE_ADMINISTRADOR_UNIDAD'
+                            "
+                            required
+                        >
+                            <option value="">Seleccione un modelo</option>
+                            <option
+                                *ngFor="let modelo of modelosFiltrados"
+                                [value]="modelo.id"
+                            >
+                                {{ modelo.modelo }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <!-- AÑO -->
+                        <p>Año</p>
+                        <input
+                            class="form-control my-2"
+                            [value]="anioModelo"
+                            readonly
+                            type="number"
+                        />
+                    </div>
+                    <div class="col-6">
+                        <!-- MATRÍCULA -->
+                        <p>Matrícula</p>
+                        <input
+                            class="form-control my-2"
+                            [(ngModel)]="equipoForm.matricula"
+                            [disabled]="
+                                authservice.getRol() == 'ROLE_UNIDAD' ||
+                                authservice.getRol() ==
+                                    'ROLE_ADMINISTRADOR_UNIDAD'
+                            "
+                            name="matricula"
+                        />
+                    </div>
+
+                    <div class="col-6">
+                        <!-- motor -->
+                        <p>Número de motor</p>
+                        <input
+                            class="form-control my-2"
+                            [(ngModel)]="equipoForm.numeroMotor"
+                            [disabled]="
+                                authservice.getRol() == 'ROLE_UNIDAD' ||
+                                authservice.getRol() ==
+                                    'ROLE_ADMINISTRADOR_UNIDAD'
+                            "
+                            name="numeroMotor"
+                        />
+                    </div>
+
+                    <div class="col-6">
+                        <!-- USO -->
+                        <p>
+                            {{
+                                equipoForm.modeloEquipo.unidadMedida ||
+                                    "Unidad de medida"
+                            }}
+                        </p>
+                        <input
+                            class="form-control my-2"
+                            [(ngModel)]="equipoForm.cantidadUnidadMedida"
+                            name="cantidadUnidadMedida"
+                            [disabled]="authservice.getRol() == 'ROLE_UNIDAD'"
+                        />
+                    </div>
+                    <div class="col-6">
+                        <!-- ESTADO -->
+                        <p>Estado</p>
+                        <select
+                            class="form-control my-2"
+                            [(ngModel)]="equipoForm.estado"
+                            name="estadoEquipo"
+                            required
+                        >
+                            <option value="">Seleccione un estado</option>
+                            <option
+                                *ngFor="let estado of estados"
+                                [value]="estado"
+                            >
+                                {{ estado }}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <!-- OBSERVACIONES -->
+                        <p>Observaciones</p>
+                        <textarea
+                            class="form-control my-2"
+                            [(ngModel)]="equipoForm.observaciones"
+                            name="observaciones"
+                        ></textarea>
+                    </div>
+                    <div class="col-12">
+                        <!-- BOTONES -->
+                        <div class="row justify-content-between mt-3">
+                            <div class="col-4">
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary w-100"
+                                    [disabled]="maquinaForm.invalid"
+                                >
+                                    {{
+                                        equipoForm.id ? "Actualizar" : "Guardar"
+                                    }}
+                                </button>
+                            </div>
+                            <div class="col-4">
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary w-100"
+                                    (click)="onCancel()"
+                                >
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

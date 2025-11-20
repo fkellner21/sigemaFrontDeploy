@@ -1,0 +1,400 @@
+<div class="modal" tabindex="-1" style="display: block">
+    <div class="modal-dialog" [ngClass]="{ 'modal-xl': tramite.id }">
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h5 class="modal-title w-100 text-center">
+                    {{ tramite.id ? "Actualizar trámite" : "Agregar trámite" }}
+                </h5>
+                <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                    (click)="onCancel()"
+                ></button>
+            </div>
+
+            <div class="modal-body">
+                <div *ngIf="isLoading" class="form text-center">
+                    <p><strong> Cargando... </strong></p>
+                    <div class="spinner-border text-dark" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                </div>
+
+                <form
+                    #tramiteForm="ngForm"
+                    (ngSubmit)="onSubmit()"
+                    class="row"
+                    *ngIf="!isLoading"
+                >
+                    <div
+                        [ngClass]="{
+                            'col-xl-4 pe-3 border-end': tramite.id,
+                            'col-12': !tramite.id
+                        }"
+                    >
+                        <!-- Tipo de trámite -->
+                        <div class="col-lg-12">
+                            <p>Tipo de Trámite</p>
+                            <select
+                                class="form-control my-2"
+                                name="tipoTramite"
+                                [(ngModel)]="tramite.tipoTramite"
+                                disabled
+                            >
+                                <option [ngValue]="null" disabled>
+                                    Seleccione un tipo...
+                                </option>
+                                <option
+                                    *ngFor="let tipo of tipoTramiteOptions"
+                                    [ngValue]="tipo.key"
+                                >
+                                    {{ tipo.label }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="row">
+                            <!-- Estado -->
+                            <div class="col-lg-6">
+                                <p>Estado</p>
+                                <select
+                                    class="form-control my-2"
+                                    name="estado"
+                                    [(ngModel)]="tramite.estado"
+                                    required
+                                    disabled
+                                >
+                                    <option [ngValue]="null" disabled>
+                                        Seleccione un estado...
+                                    </option>
+                                    <option
+                                        *ngFor="let estado of estadoOptions"
+                                        [ngValue]="estado.key"
+                                    >
+                                        {{ estado.label }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Fecha inicio -->
+                            <div class="col-lg-6">
+                                <p>Fecha de inicio</p>
+                                <input
+                                    type="date"
+                                    class="form-control my-2"
+                                    name="fechaInicio"
+                                    [value]="
+                                        tramite.fechaInicio
+                                            | date : 'yyyy-MM-dd'
+                                    "
+                                    disabled
+                                />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <!-- Unidad Origen -->
+                            <div class="col-lg-6">
+                                <p>Unidad de Origen</p>
+                                <select
+                                    class="form-control my-2"
+                                    name="unidadOrigen"
+                                    [(ngModel)]="tramite.idUnidadOrigen"
+                                    required
+                                    disabled
+                                >
+                                    <option disabled>
+                                        Seleccione una unidad
+                                    </option>
+                                    <option [ngValue]="0">Todos</option>
+                                    <option
+                                        *ngFor="let unidad of unidades"
+                                        [ngValue]="unidad.id"
+                                    >
+                                        {{ unidad.nombre }}
+                                    </option>
+                                </select>
+                            </div>
+
+                            <!-- Unidad Destino -->
+                            <div class="col-lg-6">
+                                <p>Unidad de Destino</p>
+                                <select
+                                    class="form-control my-2"
+                                    name="unidadDestino"
+                                    [(ngModel)]="tramite.idUnidadDestino"
+                                    required
+                                    [disabled]="
+                                        tramite.estado !==
+                                        estadosTramites.Iniciado
+                                    "
+                                >
+                                    <option disabled>
+                                        Seleccione una unidad
+                                    </option>
+                                    <option [ngValue]="0">Todos</option>
+                                    <option
+                                        *ngFor="let unidad of unidades"
+                                        [ngValue]="unidad.id"
+                                    >
+                                        {{ unidad.nombre }}
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Texto -->
+                        <div class="col-12">
+                            <p>Texto</p>
+                            <textarea
+                                [disabled]="
+                                    tramite.estado !== estadosTramites.Iniciado
+                                "
+                                class="form-control my-2"
+                                [(ngModel)]="tramite.texto"
+                                name="texto"
+                                rows="3"
+                                placeholder="Ingrese información adicional..."
+                            ></textarea>
+                        </div>
+                    </div>
+
+                    <div
+                        class="col-xl-8 ps-3"
+                        *ngIf="
+                            (tramite.id ?? 0 !== 0) &&
+                            (tramite.id ?? 0 !== null) &&
+                            (tramite.id ?? 0 !== undefined)
+                        "
+                    >
+                        <mat-tab-group>
+                            <mat-tab label="Actuaciones">
+                                <p>
+                                    <strong
+                                        >Actuaciones sobre el trámite</strong
+                                    >
+                                </p>
+                                <div class="mb-3">
+                                    <label
+                                        for="nuevaActuacion"
+                                        class="form-label"
+                                        >Nueva actuación</label
+                                    >
+                                    <textarea
+                                        id="nuevaActuacion"
+                                        [(ngModel)]="nuevaActuacion"
+                                        name="nuevaActuacion"
+                                        class="form-control"
+                                        rows="5"
+                                        placeholder="Escriba una nueva actuación..."
+                                    ></textarea>
+                                </div>
+
+                                <div class="text-end">
+                                    <button
+                                        type="button"
+                                        class="btn btn-dark"
+                                        (click)="guardarActuacion()"
+                                        [disabled]="
+                                            !nuevaActuacion.trim() ||
+                                            (tramite.id ?? 0) == 0 ||
+                                            tramite.estado ===
+                                                estadosTramites.Aprobado ||
+                                            tramite.estado ===
+                                                estadosTramites.Rechazado
+                                        "
+                                    >
+                                        Guardar actuación
+                                    </button>
+                                </div>
+
+                                <div class="mb-3">
+                                    <p>
+                                        <strong
+                                            >Historial de actuaciones</strong
+                                        >
+                                    </p>
+                                    <div
+                                        class="border rounded p-2"
+                                        style="
+                                            max-height: 300px;
+                                            overflow-y: auto;
+                                            background-color: #f9f9f9;
+                                        "
+                                    >
+                                        <div
+                                            *ngFor="
+                                                let actuacion of tramite.actuaciones
+                                            "
+                                            class="mb-3"
+                                        >
+                                            <div
+                                                class="d-flex justify-content-between align-items-center mb-1"
+                                            >
+                                                <strong>
+                                                    {{
+                                                        (actuacion.usuario
+                                                            ?.grado?.nombre ||
+                                                            " ") +
+                                                            " " +
+                                                            (actuacion.usuario
+                                                                ?.nombreCompleto ||
+                                                                "Sin solicitante")
+                                                    }}</strong
+                                                >
+                                                <span class="text-muted">
+                                                    {{
+                                                        actuacion.fecha
+                                                            | date
+                                                                : "dd/MM/yyyy HH:mm"
+                                                    }}
+                                                </span>
+                                            </div>
+                                            <textarea
+                                                #txtDesc
+                                                class="form-control"
+                                                [value]="actuacion.descripcion"
+                                                rows="3"
+                                                readonly
+                                                style="
+                                                    resize: none;
+                                                    background-color: #f1f1f1;
+                                                    overflow: hidden;
+                                                "
+                                                (input)="autoGrow(txtDesc)"
+                                            ></textarea>
+                                        </div>
+
+                                        <div
+                                            *ngIf="
+                                                !tramite.actuaciones ||
+                                                tramite.actuaciones.length === 0
+                                            "
+                                            class="text-muted"
+                                        >
+                                            No hay actuaciones registradas.
+                                        </div>
+                                    </div>
+                                </div>
+                            </mat-tab>
+                            <mat-tab label="Historial">
+                                <p>
+                                    <strong
+                                        >Usuarios que interactuaron en este
+                                        trámite</strong
+                                    >
+                                </p>
+
+                                <table
+                                    mat-table
+                                    [dataSource]="dataSourceVisualizaciones"
+                                    class="mat-elevation-z8 table table-striped table-hover mt-2"
+                                >
+                                    <ng-container matColumnDef="usuario">
+                                        <th
+                                            mat-header-cell
+                                            *matHeaderCellDef
+                                            class="bg-dark text-white"
+                                        >
+                                            Usuario
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            {{
+                                                (element.usuario?.grado
+                                                    ?.nombre || "") +
+                                                    " " +
+                                                    (element.usuario
+                                                        ?.nombreCompleto || "")
+                                            }}
+                                        </td>
+                                    </ng-container>
+                                    <ng-container matColumnDef="descripcion">
+                                        <th
+                                            mat-header-cell
+                                            *matHeaderCellDef
+                                            class="bg-dark text-white"
+                                        >
+                                            Descripción
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            {{ element.descripcion }}
+                                        </td>
+                                    </ng-container>
+                                    <ng-container matColumnDef="fecha">
+                                        <th
+                                            mat-header-cell
+                                            *matHeaderCellDef
+                                            class="bg-dark text-white"
+                                        >
+                                            Última Visualización
+                                        </th>
+                                        <td mat-cell *matCellDef="let element">
+                                            {{
+                                                element.fecha
+                                                    | date : "dd/MM/yyyy HH:mm"
+                                            }}
+                                        </td>
+                                    </ng-container>
+
+                                    <tr
+                                        mat-header-row
+                                        *matHeaderRowDef="[
+                                            'usuario',
+                                            'descripcion',
+                                            'fecha'
+                                        ]"
+                                    ></tr>
+                                    <tr
+                                        mat-row
+                                        *matRowDef="
+                                            let row;
+                                            columns: [
+                                                'usuario',
+                                                'descripcion',
+                                                'fecha'
+                                            ]
+                                        "
+                                    ></tr>
+
+                                    <tr class="mat-row" *matNoDataRow>
+                                        <td class="mat-cell" colspan="2">
+                                            No hay visualizaciones registradas.
+                                        </td>
+                                    </tr>
+                                </table>
+                            </mat-tab>
+                        </mat-tab-group>
+                    </div>
+
+                    <div class="col-lg-12">
+                        <div class="row justify-content-between mt-3">
+                            <div class="col-lg-4">
+                                @if(tramite.estado === estadosTramites.Iniciado)
+                                {
+                                <button
+                                    type="submit"
+                                    class="btn btn-primary w-100"
+                                    [disabled]="
+                                        tramiteForm.invalid ||
+                                        tramite.estado != 'Iniciado'
+                                    "
+                                >
+                                    {{ tramite.id ? "Actualizar" : "Guardar" }}
+                                </button>
+                                }
+                            </div>
+                            <div class="col-lg-3">
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary w-100"
+                                    (click)="onCancel()"
+                                >
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

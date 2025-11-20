@@ -1,0 +1,110 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Slab&display=swap");
+.abrir-modal {
+    background-color: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+}
+
+.modal-backdrop {
+    z-index: 1040 !important;
+    position: fixed !important;
+}
+
+.modal {
+    z-index: 1050 !important;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.animacion {
+    animation-duration: 2s;
+    animation-fill-mode: both;
+    -webkit-animation-duration: 2s;
+    -webkit-animation-fill-mode: both;
+}
+
+.fadeIn {
+    animation-name: fadeIn;
+    -webkit-animation-name: fadeIn;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.mb-1 {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* ocupa toda la pantalla */
+}
+
+.banner-header {
+    background-image: url("../../assets/img/banner.jpeg");
+    background-size: cover;
+    background-position: bottom;
+    background-attachment: fixed;
+    background-blend-mode: darken;
+    background-color: rgba(0, 0, 0, 0.4);
+    color: white;
+    padding: 6rem;
+    font-family: "Ancizar Serif";
+    font-weight: bold;
+    font-size: xx-large;
+    text-align: center;
+    flex-shrink: 0;
+    margin: 0;
+}
+
+.row {
+    flex: 1; /* ocupa toda la altura restante */
+    display: flex; /* para alinear horizontal sidebar y contenido */
+    margin: 0; /* para evitar gaps de bootstrap */
+}
+
+.col-2,
+.col-10 {
+    height: 100%; /* que ocupen toda la altura del contenedor row */
+    padding: 0; /* opcional para ajustar */
+}
+
+.sidebar {
+    height: 100%;
+    overflow-y: auto; /* scroll vertical si necesario */
+    position: sticky;
+    top: 0;
+    z-index: 0;
+}
+.central {
+    z-index: 0;
+}

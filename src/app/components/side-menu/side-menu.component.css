@@ -1,0 +1,87 @@
+:host {
+    display: block;
+    height: 100%; /* Aseguramos que el componente ocupe toda la altura de su padre */
+}
+
+/* El contenedor principal del menú */
+.sidebar-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* La lista principal de ítems del menú */
+.menu-items {
+    flex-grow: 1; /* Esto hace que se estire para ocupar todo el espacio vertical disponible */
+    overflow-y: auto; /* Permite desplazamiento si el contenido es demasiado largo */
+    background-color: #f7f7f7;
+    border-radius: 4px;
+    padding: 0.5rem;
+}
+
+/* Estilos de los ítems */
+.mat-list-item {
+    background-color: #f7f7f7;
+    border-radius: 4px;
+    color: black; /* Color del texto del menú */
+}
+
+.mat-list-item:hover {
+    background-color: #495057;
+    color: white; /* Color del texto al pasar el cursor */
+}
+
+/* Contenedor del botón de "Salir" */
+.logout-wrapper {
+    border-top: 1px solid #ccc;
+    background-color: #f7f7f7; /* Mismo color de fondo que la lista principal */
+    border-radius: 4px;
+}
+
+/* Estilos específicos para la lista del botón de "Salir" */
+.logout-list {
+    padding: 0.5rem;
+}
+
+.sub-menu {
+    padding-left: 15px;
+}
+
+/* --- Estilos de los badges --- */
+
+.badge-red {
+    background-color: rgba(255, 0, 0, 0.7);
+    color: white;
+    border-radius: 50%;
+    width: 1.75em;
+    height: 1.75em;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.9rem;
+    font-weight: bold;
+    margin-left: 0.5em;
+    line-height: 1;
+}
+
+.notification-badge {
+    background-color: #ff4444db;
+    border-radius: 50%;
+    width: 25px;
+    text-align: center;
+}
+/* --- Fin de los estilos de los badges --- */
+
+/* Estilos para el texto y los íconos de Mat List Item */
+:host ::ng-deep .mdc-list-item__primary-text {
+    display: flex !important;
+    align-items: center !important;
+}
+
+:host ::ng-deep .mat-icon {
+    color: #495057; /* Color de los íconos */
+}
+
+.mat-list-item:hover :host ::ng-deep .mat-icon {
+    color: white; /* Color de los íconos al pasar el cursor */
+}

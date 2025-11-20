@@ -1,0 +1,145 @@
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+/>
+<link rel="stylesheet" href="lista-equipos-de-modelo.component.css" />
+
+<div class="titulo text-center my-1">Listado de equipos</div>
+
+<div class="row justify-content-between align-items-center me-0">
+    <div class="col-4">
+        <mat-form-field class="w-100">
+            <mat-label>Buscar</mat-label>
+            <input matInput (keyup)="applyFilter($event)" #input />
+        </mat-form-field>
+    </div>
+</div>
+
+<div class="row me-0">
+    <div>
+        <table
+            mat-table
+            [dataSource]="dataSource"
+            class="mat-elevation-z8 table table-striped table-hover"
+        >
+            <!-- Unidad -->
+            <ng-container matColumnDef="unidad">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white"
+                >
+                    Unidad
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{ element.unidad?.nombre || "N/A" }}
+                </td>
+            </ng-container>
+
+            <!-- Tipo Máquina -->
+            <ng-container matColumnDef="tipoMaquina">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white"
+                >
+                    Tipo
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{ element.modeloEquipo?.tipoEquipo?.codigo || "N/A" }}
+                </td>
+            </ng-container>
+
+            <!-- Matrícula -->
+            <ng-container matColumnDef="matricula">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white"
+                >
+                    Matrícula
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{ element.matricula }}
+                </td>
+            </ng-container>
+
+            <!-- Marca -->
+            <ng-container matColumnDef="marca">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white"
+                >
+                    Marca
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{ element.modeloEquipo?.marca?.nombre || "N/A" }}
+                </td>
+            </ng-container>
+
+            <!-- Modelo -->
+            <ng-container matColumnDef="modelo">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white"
+                >
+                    Modelo
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{ element.modeloEquipo?.modelo }}
+                </td>
+            </ng-container>
+            <!-- Modelo -->
+            <ng-container matColumnDef="estado">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white"
+                >
+                    Estado
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{ element.estado }}
+                </td>
+            </ng-container>
+            <!-- Capacidad -->
+            <ng-container matColumnDef="capacidad">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white"
+                >
+                    M³
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{ element.modeloEquipo?.capacidad }}
+                </td>
+            </ng-container>
+
+            <!-- Tiempo de trabajo -->
+            <ng-container matColumnDef="tiempoDeTrabajo">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white"
+                >
+                    KMs/HT
+                </th>
+                <td mat-cell *matCellDef="let element">
+                    {{ element.cantidadUnidadMedida?.toFixed(2) }}
+                    {{ element.modeloEquipo?.unidadMedida }}
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+    </div>
+</div>
+<div class="text-center my-3" *ngIf="isLoadingMaquinas">
+    <div class="spinner-border text-dark" role="status">
+        <span class="visually-hidden">Cargando...</span>
+    </div>
+</div>

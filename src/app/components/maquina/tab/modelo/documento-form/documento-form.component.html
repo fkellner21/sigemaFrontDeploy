@@ -1,0 +1,70 @@
+<div class="p-3">
+    <h5>Documentos disponibles</h5>
+
+    @if(documentos.length>0){
+    <ul class="list-group my-3">
+        <li *ngFor="let doc of documentos" class="list-group-item">
+            <div class="row">
+                <div class="col-8" style="overflow-wrap: anywhere">
+                    {{ doc.nombreArchivo }}
+                </div>
+                <div class="col-2">
+                    <button
+                        (click)="descargarDocumento(doc.id, doc.nombreArchivo)"
+                        class="btn btn-sm btn-outline-primary"
+                    >
+                        Descargar
+                    </button>
+                </div>
+                <div class="col-2">
+                    <button
+                        *ngIf="
+                            authservice.getRol() == 'ROLE_ADMINISTRADOR' ||
+                            authservice.getRol() == 'ROLE_BRIGADA' ||
+                            authservice.getRol() == 'ROLE_ADMINISTRADOR_UNIDAD'
+                        "
+                        (click)="eliminarDocumento(doc.id)"
+                        class="btn btn-sm btn-outline-danger"
+                    >
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        </li>
+    </ul>
+    }@else {
+    <p>Aún no hay documentos para el modelo</p>
+    }
+    <div class="text-center my-3" *ngIf="isLoading">
+        <div class="spinner-border text-dark" role="status">
+            <span class="visually-hidden">Cargando...</span>
+        </div>
+    </div>
+
+    <div
+        class="row justify-content-between mt-3"
+        *ngIf="
+            authservice.getRol() == 'ROLE_ADMINISTRADOR' ||
+            authservice.getRol() == 'ROLE_BRIGADA' ||
+            authservice.getRol() == 'ROLE_ADMINISTRADOR_UNIDAD'
+        "
+    >
+        <div class="col-9">
+            <input
+                type="file"
+                (change)="onFileSelected($event)"
+                class="form-control"
+                #fileInput
+            />
+        </div>
+        <div class="col-3 text-end">
+            <button
+                (click)="subirDocumento()"
+                [disabled]="!selectedFile"
+                class="btn btn-primary"
+            >
+                Subir documento
+            </button>
+        </div>
+    </div>
+</div>

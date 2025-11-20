@@ -1,0 +1,27 @@
+html,
+body {
+    height: 100%;
+    width: 100%;
+}
+body {
+    margin: 0;
+    font-family: Roboto, "Helvetica Neue", sans-serif;
+    overflow-x: hidden !important;
+}
+
+.cdk-overlay-container,
+.cdk-overlay-pane {
+    z-index: 1200 !important;
+}
+.mat-datepicker-content {
+    z-index: 1200 !important;
+    background-color: #f0f0f0;
+}
+
+.row,
+table {
+    overflow: visible !important;
+}
+::ng-deep .mat-calendar {
+    background-color: white !important;
+}

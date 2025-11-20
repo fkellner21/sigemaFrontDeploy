@@ -1,0 +1,43 @@
+<div class="backDashboard">
+    <div class="row my-2">
+        <mapa
+            [equiposDTO]="equiposDTO"
+            class="col-12 ps-0 col-lg-9 col-xxl-10"
+        ></mapa>
+        <div class="chartsEstado col-3 col-xxl-2 text-aline-center">
+            <div class="row justify-content-center">
+                <p><strong>Estado de los equipos</strong></p>
+                <chart-estado
+                    class="col-auto"
+                    [titulo]="verde"
+                    [cantidad]="equiposEnVerde"
+                ></chart-estado>
+                <chart-estado
+                    class="col-auto"
+                    [titulo]="amarillo"
+                    [cantidad]="equiposEnAmarillo"
+                ></chart-estado>
+                <chart-estado
+                    class="col-auto"
+                    [titulo]="rojo"
+                    [cantidad]="equiposEnRojo"
+                ></chart-estado>
+                <chart-estado
+                    class="col-auto"
+                    [titulo]="negro"
+                    [cantidad]="equiposEnNegro"
+                ></chart-estado>
+            </div>
+        </div>
+
+        <div class="col-9 col-lg-12">
+            <div class="row">
+                <div class="col-12 text-center mt-lg-5 mb-2">
+                    <h5>Capacidad de m3 Operativos</h5>
+                </div>
+                <chart-capacidad class="col-12" [equiposDTO]="equiposDTO">
+                </chart-capacidad>
+            </div>
+        </div>
+    </div>
+</div>

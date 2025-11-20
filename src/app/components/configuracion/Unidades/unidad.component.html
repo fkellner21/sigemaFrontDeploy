@@ -1,0 +1,188 @@
+<link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+/>
+<link rel="stylesheet" href="unidad.component.css" />
+
+<div class="titulo text-center my-1">Listado de Unidades</div>
+
+<div class="row justify-content-center me-0">
+    <div class="col-5">
+        <div class="row justify-content-between align-items-center">
+            <div class="col-6">
+                <mat-form-field class="w-100">
+                    <mat-label>Buscar</mat-label>
+                    <input matInput (keyup)="applyFilter($event)" #input />
+                </mat-form-field>
+            </div>
+
+            <div
+                class="col-4 text-end"
+                *ngIf="authservice.getRol() == 'ROLE_ADMINISTRADOR'"
+            >
+                <button (click)="setNew()" class="btn btn-dark">
+                    Nueva unidad
+                </button>
+            </div>
+        </div>
+
+        <table
+            mat-table
+            [dataSource]="dataSource"
+            class="mat-elevation-z8 table table-striped table-hover"
+        >
+            <!-- Nombre -->
+            <ng-container matColumnDef="Nombre">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white colNombre"
+                >
+                    Nombre
+                </th>
+                <td mat-cell class="colNombre" *matCellDef="let element">
+                    {{ element.nombre }}
+                </td>
+            </ng-container>
+
+            <!-- Es Gran Unidad -->
+            <ng-container matColumnDef="EsGranUnidad">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white colTipo"
+                ></th>
+                <td mat-cell class="colTipo" *matCellDef="let element">
+                    {{ element.esGranUnidad ? "Gran Unidad" : "" }}
+                </td>
+            </ng-container>
+
+            <!-- Modificar -->
+            <ng-container matColumnDef="Modificar">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white colBtn"
+                ></th>
+                <td mat-cell class="colBtn" *matCellDef="let element">
+                    <button
+                        *ngIf="authservice.getRol() == 'ROLE_ADMINISTRADOR'"
+                        class="btn btn-dark"
+                        (click)="setSelectedUnidad(element)"
+                        title="Modificar"
+                    >
+                        <i class="bi bi-pencil"></i>
+                    </button>
+                </td>
+            </ng-container>
+
+            <!-- Agregar Mail -->
+            <ng-container matColumnDef="AgregarMail">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white colBtn"
+                ></th>
+                <td mat-cell class="colBtn" *matCellDef="let element">
+                    <button
+                        class="btn btn-outline-primary"
+                        (click)="abrirAgregarMail(element)"
+                        title="Agregar mail"
+                    >
+                        <i class="bi bi-envelope-plus"></i>
+                    </button>
+                </td>
+            </ng-container>
+
+            <!-- Ver Emails -->
+            <ng-container matColumnDef="VerEmails">
+                <th
+                    mat-header-cell
+                    *matHeaderCellDef
+                    class="bg-dark text-white colBtn"
+                ></th>
+                <td mat-cell class="colBtn" *matCellDef="let element">
+                    <button
+                        class="btn btn-outline-secondary"
+                        (click)="abrirEmailsModal(element)"
+                        title="Ver emails"
+                    >
+                        <i class="bi bi-envelope-open"></i>
+                    </button>
+                </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell" colspan="4">
+                    No existen datos para la consulta "{{ input.value }}"
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+
+<!-- Cargando -->
+<div class="text-center my-3" *ngIf="isLoading">
+    <div class="spinner-border text-dark" role="status">
+        <span class="visually-hidden">Cargando...</span>
+    </div>
+</div>
+
+<!-- Modal de creación o edición de unidad -->
+@if(open){
+<div class="abrir-modal animacion fadeIn">
+    <unidad-form
+        [unidad]="unidadSelected"
+        (newUnidadEventEmitter)="addUnidad($event)"
+        (openEventEmitter)="setOpen()"
+    />
+</div>
+}
+
+<!-- MODAL: Lista de Emails -->
+<ng-template #emailsModal>
+    <div class="modal-background">
+        <div class="modal-container p-3">
+            <h5>Emails de la unidad {{ unidadConEmails?.nombre }}</h5>
+
+            <ng-container *ngIf="listaEmails.length > 0; else noEmails">
+                <ul class="list-group my-3">
+                    <li
+                        class="list-group-item d-flex justify-content-between align-items-center"
+                        *ngFor="let email of listaEmails"
+                    >
+                        {{ email.email }}
+                        <button
+                            class="btn btn-sm btn-outline-danger"
+                            (click)="borrarEmail(email.id!)"
+                            [disabled]="listaEmails.length === 1"
+                            title="Eliminar email"
+                        >
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </li>
+                </ul>
+            </ng-container>
+
+            <ng-template #noEmails>
+                <div class="alert alert-info" role="alert">
+                    No tiene emails cargados para esta unidad.
+                </div>
+            </ng-template>
+
+            <div class="text-end">
+                <button class="btn btn-secondary" (click)="cerrarEmailsModal()">
+                    Cerrar
+                </button>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+<ng-container *ngIf="modalEmailsAbierto">
+    <ng-container *ngTemplateOutlet="emailsModal"></ng-container>
+</ng-container>
+`

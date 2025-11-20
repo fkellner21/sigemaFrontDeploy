@@ -1,0 +1,18 @@
+.modal-backdrop {
+    z-index: 1040 !important;
+    position: fixed !important;
+}
+
+.modal {
+    z-index: 1050 !important;
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+}
+
+.mat-mdc-tab-body.mat-mdc-tab-body-active{
+    z-index: 0 !important;
+}

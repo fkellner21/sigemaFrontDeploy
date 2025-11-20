@@ -1,0 +1,33 @@
+.titulo {
+    background-image: url("../../../assets/img/pixelado.jpg");
+    background-repeat: repeat;
+    background-size: 30%;
+    background-blend-mode: darken;
+    background-color: rgba(0, 0, 0, 0.4);
+    color: white;
+    font-family: "Ancizar Serif";
+    font-weight: bold;
+    font-size: x-large;
+    padding: 10px;
+}
+td,
+th {
+    vertical-align: middle;
+}
+
+.cdk-overlay-container,
+.cdk-overlay-pane {
+    z-index: 1200 !important;
+}
+.mat-datepicker-content {
+    z-index: 1200 !important;
+    background-color: #f0f0f0;
+}
+
+.row,
+table {
+    overflow: visible !important;
+}
+::ng-deep .mat-calendar {
+    background-color: white !important;
+}

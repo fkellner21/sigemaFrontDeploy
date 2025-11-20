@@ -1,0 +1,13 @@
+.chart-container {
+    height: 110px;
+    width: 110px;
+    overflow: visible;
+    border: 1px;
+    border-style: solid;
+    border-color: black;
+    border-radius: 20%;
+    background-color: rgba(245, 245, 245, 0.719);
+    align-items: center;
+    margin: 5px;
+    padding-top: 5px;
+}

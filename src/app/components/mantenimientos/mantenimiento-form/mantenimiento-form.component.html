@@ -1,0 +1,389 @@
+<div class="modal" tabindex="-1" style="display: block">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    {{ mantenimiento.id ? "Editar" : "Agregar" }} mantenimiento
+                </h5>
+                <button
+                    (click)="onOpen()"
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                ></button>
+            </div>
+
+            <div class="modal-body">
+                <form
+                    (ngSubmit)="onSubmit(mantenimientoForm)"
+                    #mantenimientoForm="ngForm"
+                >
+                    <div class="row">
+                        <div class="col-md-4">
+                            <!-- Equipo -->
+                            <div>
+                                <p>Equipo</p>
+                                <input
+                                    class="form-control my-2"
+                                    [value]="equipo.matricula"
+                                    disabled
+                                    type="text"
+                                />
+                            </div>
+
+                            <!-- Fecha de mantenimiento -->
+                            <div>
+                                <p>Fecha de mantenimiento</p>
+                                <input
+                                    name="fechaMantenimiento"
+                                    type="date"
+                                    class="form-control my-2"
+                                    [ngModel]="
+                                        mantenimiento.fechaMantenimiento
+                                            | date : 'yyyy-MM-dd'
+                                    "
+                                    (ngModelChange)="
+                                        mantenimiento.fechaMantenimiento =
+                                            $event
+                                    "
+                                    required
+                                    #fechaMantenimiento="ngModel"
+                                />
+
+                                <div
+                                    *ngIf="
+                                        fechaMantenimiento.invalid &&
+                                        (fechaMantenimiento.dirty ||
+                                            fechaMantenimiento.touched)
+                                    "
+                                >
+                                    <div
+                                        *ngIf="fechaMantenimiento.errors?.['required']"
+                                        class="alert alert-danger"
+                                    >
+                                        Fecha requerida
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div
+                                *ngIf="
+                                    mantenimiento.id &&
+                                    mantenimiento.fechaRegistro
+                                "
+                            >
+                                <p>Fecha de registro</p>
+                                <input
+                                    class="form-control my-2"
+                                    [value]="
+                                        mantenimiento.fechaRegistro
+                                            | date : 'yyyy-MM-dd'
+                                    "
+                                    disabled
+                                    type="date"
+                                />
+                            </div>
+
+                            <!-- Descripción -->
+                            <div>
+                                <p>Descripción</p>
+                                <input
+                                    name="descripcion"
+                                    [(ngModel)]="mantenimiento.descripcion"
+                                    class="form-control my-2"
+                                    type="text"
+                                    required
+                                    #descripcion="ngModel"
+                                />
+                                <div
+                                    *ngIf="
+                                        descripcion.invalid &&
+                                        (descripcion.dirty ||
+                                            descripcion.touched)
+                                    "
+                                >
+                                    <div
+                                        *ngIf="descripcion.errors?.['required']"
+                                        class="alert alert-danger"
+                                    >
+                                        Descripción requerida
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Unidad de medida -->
+                            <div>
+                                <p>Unidad de medida</p>
+                                <input
+                                    class="form-control my-2"
+                                    [value]="
+                                        mantenimiento.unidadMedida === 'HT'
+                                            ? 'Horas de trabajo'
+                                            : 'KM'
+                                    "
+                                    disabled
+                                    type="text"
+                                />
+                            </div>
+
+                            <!-- Cantidad unidad de medida -->
+                            <div>
+                                <p>
+                                    Cantidad ({{
+                                        mantenimiento.unidadMedida === "HT"
+                                            ? "Horas de trabajo"
+                                            : "Kilómetros"
+                                    }})
+                                </p>
+                                <input
+                                    type="number"
+                                    name="cantidadUnidadMedida"
+                                    [(ngModel)]="
+                                        mantenimiento.cantidadUnidadMedida
+                                    "
+                                    class="form-control my-2"
+                                    min="1"
+                                    required
+                                    #cantidadUnidadMedida="ngModel"
+                                />
+                                <div
+                                    *ngIf="
+                                        cantidadUnidadMedida.invalid &&
+                                        (cantidadUnidadMedida.dirty ||
+                                            cantidadUnidadMedida.touched)
+                                    "
+                                >
+                                    <div
+                                        *ngIf="cantidadUnidadMedida.errors?.['required']"
+                                        class="alert alert-danger"
+                                    >
+                                        Este campo es obligatorio
+                                    </div>
+                                    <div
+                                        *ngIf="cantidadUnidadMedida.errors?.['min']"
+                                        class="alert alert-danger"
+                                    >
+                                        Debe ser mayor a 0
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Es servicio -->
+                            <div class="form-check my-2">
+                                <input
+                                    type="checkbox"
+                                    class="form-check-input"
+                                    id="esServicio"
+                                    name="esServicio"
+                                    [(ngModel)]="mantenimiento.esService"
+                                />
+                                <label
+                                    for="esServicio"
+                                    class="form-check-label"
+                                >
+                                    ¿Es service?
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <p>Tipo de repuesto</p>
+                                    <select
+                                        class="form-select my-2"
+                                        [(ngModel)]="tipoRepuestoSeleccionado"
+                                        name="tipoRepuesto"
+                                        (ngModelChange)="onTipoRepuestoChange()"
+                                    >
+                                        <option [value]="TipoRepuesto.Pieza">
+                                            Pieza
+                                        </option>
+                                        <option
+                                            [value]="TipoRepuesto.Lubricante"
+                                        >
+                                            Lubricante
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <p>Repuesto</p>
+                                    <select
+                                        class="form-control my-2"
+                                        name="repuesto"
+                                        [(ngModel)]="
+                                            repuestoSeleccionado.idRepuesto
+                                        "
+                                        [compareWith]="compareRpuestos"
+                                    >
+                                        <option [ngValue]="null" disabled>
+                                            Seleccione un repuesto...
+                                        </option>
+                                        <option
+                                            *ngFor="let repuesto of repuestos"
+                                            [ngValue]="repuesto.id"
+                                        >
+                                            {{
+                                                repuesto.nombre +
+                                                    " - " +
+                                                    repuesto.caracteristicas
+                                            }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <p>Cantidad usada</p>
+                                    <input
+                                        [disabled]="
+                                            repuestoSeleccionado.idRepuesto ===
+                                            0
+                                        "
+                                        type="number"
+                                        class="form-control my-2"
+                                        name="cantidadUsada"
+                                        [(ngModel)]="
+                                            repuestoSeleccionado.cantidadUsada
+                                        "
+                                        min="0"
+                                    />
+                                </div>
+                                <div class="col-md-2 align-self-end">
+                                    <button
+                                        *ngIf="
+                                            authservice.getRol() !=
+                                            'ROLE_UNIDAD'
+                                        "
+                                        type="button"
+                                        class="btn btn-dark my-2 w-100 align-self-end"
+                                        (click)="onAddRepuesto()"
+                                    >
+                                        Agregar repuesto
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="mt-4">
+                                <table
+                                    mat-table
+                                    [dataSource]="dataSourceRepuestos"
+                                    class="mat-elevation-z8 table table-striped table-hover"
+                                >
+                                    <ng-container matColumnDef="repuesto">
+                                        <th
+                                            mat-header-cell
+                                            *matHeaderCellDef
+                                            class="bg-dark text-white"
+                                        >
+                                            Repuesto
+                                        </th>
+                                        <td mat-cell *matCellDef="let r">
+                                            {{
+                                                r.repuesto?.nombre +
+                                                    " - " +
+                                                    r.repuesto?.caracteristicas
+                                            }}
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="cantidad">
+                                        <th
+                                            mat-header-cell
+                                            *matHeaderCellDef
+                                            class="bg-dark text-white"
+                                        >
+                                            Cantidad Usada
+                                        </th>
+                                        <td mat-cell *matCellDef="let r">
+                                            {{ r.cantidadUsada }}
+                                        </td>
+                                    </ng-container>
+
+                                    <ng-container matColumnDef="acciones">
+                                        <th
+                                            mat-header-cell
+                                            *matHeaderCellDef
+                                            class="bg-dark text-white text-center"
+                                        >
+                                            Acciones
+                                        </th>
+                                        <td
+                                            mat-cell
+                                            *matCellDef="let r; let i = index"
+                                            class="text-center"
+                                        >
+                                            <button
+                                                *ngIf="
+                                                    authservice.getRol() !=
+                                                    'ROLE_UNIDAD'
+                                                "
+                                                type="button"
+                                                class="btn btn-danger btn-sm"
+                                                (click)="onRemoveRepuesto(i)"
+                                                title="Eliminar"
+                                            >
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </ng-container>
+
+                                    <tr
+                                        mat-header-row
+                                        *matHeaderRowDef="
+                                            displayedRepuestoColumns
+                                        "
+                                    ></tr>
+                                    <tr
+                                        mat-row
+                                        *matRowDef="
+                                            let row;
+                                            columns: displayedRepuestoColumns
+                                        "
+                                    ></tr>
+
+                                    <tr class="mat-row" *matNoDataRow>
+                                        <td
+                                            class="mat-cell text-center"
+                                            colspan="3"
+                                        >
+                                            No se han agregado repuestos a este
+                                            mantenimiento.
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- Botones -->
+                        <div class="row justify-content-between mt-3">
+                            <div class="col-4">
+                                <button
+                                    *ngIf="
+                                        authservice.getRol() != 'ROLE_UNIDAD'
+                                    "
+                                    type="submit"
+                                    class="btn btn-primary"
+                                    [disabled]="mantenimientoForm.invalid"
+                                >
+                                    {{
+                                        mantenimiento.id
+                                            ? "Modificar"
+                                            : "Agregar mantenimiento"
+                                    }}
+                                </button>
+                            </div>
+                            <div class="col-4">
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary w-100"
+                                    data-bs-dismiss="modal"
+                                    (click)="onOpen()"
+                                >
+                                    Cerrar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
